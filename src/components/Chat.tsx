@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import ChatMessage, { ChatMessageProps } from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -235,4 +234,3 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
 };
 
 export default Chat;
-

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Copy, Check, RefreshCw, ArrowRight, Globe, Lock, Key, Hash, FileCode } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,9 +20,14 @@ import {
   encodeBase64,
   decodeBase64,
   encodeUrl,
-  decodeUrl
+  decodeUrl,
+  checkPhishingLink,
+  validateUpiId,
+  indianCybersecurityLaws,
+  commonIndianFrauds
 } from '@/utils/securityUtils';
 import { useToast } from '@/hooks/use-toast';
+import SecureFileTransfer from './SecureFileTransfer';
 
 export const PasswordStrengthChecker: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -701,6 +705,279 @@ export const EncodeAndDecode: React.FC = () => {
   );
 };
 
+export const FraudDetection: React.FC = () => {
+  const [url, setUrl] = useState('');
+  const [upiId, setUpiId] = useState('');
+  const [analysisResult, setAnalysisResult] = useState<{isSuspicious?: boolean; reasons?: string[]; isValidUpi?: boolean} | null>(null);
+  const { toast } = useToast();
+  
+  const checkUrl = () => {
+    if (!url) {
+      toast({
+        title: "Empty URL",
+        description: "Please enter a URL to check",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const result = checkPhishingLink(url);
+    setAnalysisResult(result);
+    
+    if (result.isSuspicious) {
+      toast({
+        title: "Suspicious URL Detected",
+        description: "This URL shows signs of being potentially malicious",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "URL Check Complete",
+        description: "No obvious suspicious indicators found",
+      });
+    }
+  };
+  
+  const checkUpi = () => {
+    if (!upiId) {
+      toast({
+        title: "Empty UPI ID",
+        description: "Please enter a UPI ID to validate",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const isValid = validateUpiId(upiId);
+    setAnalysisResult({ isValidUpi: isValid });
+    
+    if (isValid) {
+      toast({
+        title: "Valid UPI Format",
+        description: "The UPI ID format appears to be valid",
+      });
+    } else {
+      toast({
+        title: "Invalid UPI Format",
+        description: "This does not appear to be a valid UPI ID format",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  return (
+    <Card className="w-full glass-panel">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium">Fraud Detection</CardTitle>
+        <CardDescription>Check for phishing sites and analyze suspicious content</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Tabs defaultValue="phishing">
+          <TabsList className="grid grid-cols-2 mb-4">
+            <TabsTrigger value="phishing">Check URL</TabsTrigger>
+            <TabsTrigger value="upi">Validate UPI</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="phishing" className="space-y-4">
+            <div className="flex space-x-2">
+              <Input 
+                value={url} 
+                onChange={(e) => setUrl(e.target.value)} 
+                placeholder="Enter URL to check (e.g., https://example.com)" 
+                className="flex-1" 
+              />
+              <Button 
+                onClick={checkUrl}
+                className="bg-cyberguardian hover:bg-cyberguardian-accent"
+              >
+                Check
+              </Button>
+            </div>
+            
+            {analysisResult && 'isSuspicious' in analysisResult && (
+              <div className={`p-4 rounded-md ${analysisResult.isSuspicious ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900' : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900'}`}>
+                <h3 className={`font-medium flex items-center mb-2 ${analysisResult.isSuspicious ? 'text-red-800 dark:text-red-300' : 'text-green-800 dark:text-green-300'}`}>
+                  {analysisResult.isSuspicious ? 'Suspicious URL Detected' : 'No Obvious Threats Detected'}
+                </h3>
+                
+                {analysisResult.isSuspicious && analysisResult.reasons && (
+                  <div className="space-y-1 mt-2">
+                    <p className="text-sm text-red-700 dark:text-red-400 font-medium">Warning signs:</p>
+                    <ul className="text-sm text-red-600 dark:text-red-400 pl-5 list-disc">
+                      {analysisResult.reasons.map((reason, i) => (
+                        <li key={i}>{reason}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {!analysisResult.isSuspicious && (
+                  <p className="text-sm text-green-700 dark:text-green-400">
+                    While this URL doesn't show obvious signs of phishing, always exercise caution.
+                  </p>
+                )}
+              </div>
+            )}
+            
+            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-md border border-amber-200 dark:border-amber-900">
+              <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">Common Signs of Phishing:</p>
+              <ul className="text-sm text-amber-700 dark:text-amber-400 pl-5 list-disc mt-2">
+                <li>Misspelled domains (e.g., amaz0n.com)</li>
+                <li>URLs with IP addresses instead of domain names</li>
+                <li>Excessive subdomains or strange TLDs (.xyz, .tk)</li>
+                <li>Urgency to act or threats in messages</li>
+                <li>Requests for personal information</li>
+              </ul>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="upi" className="space-y-4">
+            <div className="flex space-x-2">
+              <Input 
+                value={upiId} 
+                onChange={(e) => setUpiId(e.target.value)} 
+                placeholder="Enter UPI ID (e.g., username@upi)" 
+                className="flex-1" 
+              />
+              <Button 
+                onClick={checkUpi}
+                className="bg-cyberguardian hover:bg-cyberguardian-accent"
+              >
+                Validate
+              </Button>
+            </div>
+            
+            {analysisResult && 'isValidUpi' in analysisResult && (
+              <div className={`p-4 rounded-md ${analysisResult.isValidUpi ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900'}`}>
+                <h3 className={`font-medium flex items-center mb-2 ${analysisResult.isValidUpi ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
+                  {analysisResult.isValidUpi ? 'Valid UPI ID Format' : 'Invalid UPI ID Format'}
+                </h3>
+                
+                <p className={`text-sm ${analysisResult.isValidUpi ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                  {analysisResult.isValidUpi 
+                    ? 'This UPI ID format appears to be valid. However, this only checks the format, not if the ID actually exists.' 
+                    : 'This does not appear to be a valid UPI ID format. UPI IDs should follow the pattern username@provider.'}
+                </p>
+              </div>
+            )}
+            
+            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-md border border-amber-200 dark:border-amber-900">
+              <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">UPI Safety Tips:</p>
+              <ul className="text-sm text-amber-700 dark:text-amber-400 pl-5 list-disc mt-2">
+                <li>Never share your UPI PIN with anyone</li>
+                <li>Verify the UPI ID before sending money</li>
+                <li>Don't scan QR codes from untrusted sources</li>
+                <li>Be wary of "send ₹1 to verify" scams</li>
+                <li>Check for spelling mistakes in UPI IDs of known merchants</li>
+              </ul>
+            </div>
+          </TabsContent>
+        </Tabs>
+        
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-900">
+          <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">Report Cybercrime:</p>
+          <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
+            Visit <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" className="underline">cybercrime.gov.in</a> - the official Indian portal for reporting cybercrimes, including online financial fraud, social media harassment, etc.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export const ComplianceInfo: React.FC = () => {
+  return (
+    <Card className="w-full glass-panel">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium">Indian Cybersecurity Compliance</CardTitle>
+        <CardDescription>Information on key laws and regulations</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Tabs defaultValue="it-act">
+          <TabsList className="grid grid-cols-3">
+            <TabsTrigger value="it-act">IT Act</TabsTrigger>
+            <TabsTrigger value="cert-in">CERT-In</TabsTrigger>
+            <TabsTrigger value="dpdp">DPDP 2023</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="it-act" className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <h3 className="font-medium text-lg">{indianCybersecurityLaws.itAct2000.name}</h3>
+              <p className="text-sm">{indianCybersecurityLaws.itAct2000.description}</p>
+              
+              <div className="mt-4">
+                <h4 className="font-medium text-sm mb-2">Key Provisions:</h4>
+                <ul className="text-sm space-y-1 pl-5 list-disc">
+                  {indianCybersecurityLaws.itAct2000.keyProvisions.map((provision, i) => (
+                    <li key={i}>{provision}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="mt-2 text-sm">
+                <p><span className="font-medium">Amendments:</span> {indianCybersecurityLaws.itAct2000.amendments}</p>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="cert-in" className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <h3 className="font-medium text-lg">{indianCybersecurityLaws.certIn.name}</h3>
+              <p className="text-sm">{indianCybersecurityLaws.certIn.description}</p>
+              
+              <div className="mt-4">
+                <h4 className="font-medium text-sm mb-2">Requirements:</h4>
+                <ul className="text-sm space-y-1 pl-5 list-disc">
+                  {indianCybersecurityLaws.certIn.requirements.map((requirement, i) => (
+                    <li key={i}>{requirement}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="mt-2 text-sm">
+                <p><span className="font-medium">Contact:</span> {indianCybersecurityLaws.certIn.contactInfo}</p>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="dpdp" className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <h3 className="font-medium text-lg">{indianCybersecurityLaws.dpdp2023.name}</h3>
+              <p className="text-sm">{indianCybersecurityLaws.dpdp2023.description}</p>
+              
+              <div className="mt-4">
+                <h4 className="font-medium text-sm mb-2">Key Provisions:</h4>
+                <ul className="text-sm space-y-1 pl-5 list-disc">
+                  {indianCybersecurityLaws.dpdp2023.keyProvisions.map((provision, i) => (
+                    <li key={i}>{provision}</li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="mt-2 text-sm">
+                <p><span className="font-medium">Penalties:</span> {indianCybersecurityLaws.dpdp2023.penalties}</p>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+        
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-900">
+          <p className="text-sm text-blue-800 dark:text-blue-300 font-medium">Common Online Frauds in India:</p>
+          <div className="mt-2 space-y-2">
+            {commonIndianFrauds.slice(0, 3).map((fraud, i) => (
+              <div key={i} className="text-sm">
+                <p className="font-medium text-blue-700 dark:text-blue-400">{fraud.type}:</p>
+                <p className="text-blue-600 dark:text-blue-500">{fraud.description}</p>
+                <p className="mt-1 italic text-blue-500 dark:text-blue-600">Prevention: {fraud.prevention}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 export const SecurityToolsDisplay: React.FC<{ tool: string }> = ({ tool }) => {
   switch (tool) {
     case 'password-checker':
@@ -713,6 +990,12 @@ export const SecurityToolsDisplay: React.FC<{ tool: string }> = ({ tool }) => {
       return <HashAndEncrypt />;
     case 'encode-decode':
       return <EncodeAndDecode />;
+    case 'fraud-detection':
+      return <FraudDetection />;
+    case 'secure-transfer':
+      return <SecureFileTransfer />;
+    case 'compliance':
+      return <ComplianceInfo />;
     default:
       return (
         <div className="flex flex-col items-center justify-center h-48 text-center p-6">
@@ -736,6 +1019,12 @@ export const SecurityToolIcon: React.FC<{ tool: string }> = ({ tool }) => {
       return <Hash className="w-4 h-4" />;
     case 'encode-decode':
       return <FileCode className="w-4 h-4" />;
+    case 'fraud-detection':
+      return <Lock className="w-4 h-4" />;
+    case 'secure-transfer':
+      return <Lock className="w-4 h-4" />;
+    case 'compliance':
+      return <Lock className="w-4 h-4" />;
     default:
       return <Lock className="w-4 h-4" />;
   }
