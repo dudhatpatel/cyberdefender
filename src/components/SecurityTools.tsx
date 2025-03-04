@@ -28,6 +28,8 @@ import {
 } from '@/utils/securityUtils';
 import { useToast } from '@/hooks/use-toast';
 import SecureFileTransfer from './SecureFileTransfer';
+import DomainSecurityAnalyzer from './DomainSecurityAnalyzer';
+import axios from 'axios';
 
 export const PasswordStrengthChecker: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -996,6 +998,8 @@ export const SecurityToolsDisplay: React.FC<{ tool: string }> = ({ tool }) => {
       return <SecureFileTransfer />;
     case 'compliance':
       return <ComplianceInfo />;
+    case 'domain-security':
+      return <DomainSecurityAnalyzer />;
     default:
       return (
         <div className="flex flex-col items-center justify-center h-48 text-center p-6">
@@ -1025,6 +1029,8 @@ export const SecurityToolIcon: React.FC<{ tool: string }> = ({ tool }) => {
       return <Lock className="w-4 h-4" />;
     case 'compliance':
       return <Lock className="w-4 h-4" />;
+    case 'domain-security':
+      return <Globe className="h-3 w-3" />;
     default:
       return <Lock className="w-4 h-4" />;
   }

@@ -1,17 +1,20 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import ChatMessage, { ChatMessageProps } from './ChatMessage';
 import ChatInput from './ChatInput';
 import { SecurityToolIcon } from './SecurityTools';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, AlertTriangle, Lock, Upload, FileSearch, LucideIcon } from 'lucide-react';
+import { Shield, AlertTriangle, Lock, Upload, FileSearch, Globe, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ChatProps {
   initialMessages?: ChatMessageProps[];
 }
 
-type ToolType = 'password-checker' | 'password-generator' | 'ip-info' | 'hash-encrypt' | 'encode-decode' | 'fraud-detection' | 'secure-transfer' | 'compliance' | null;
+type ToolType = 'password-checker' | 'password-generator' | 'ip-info' | 'hash-encrypt' | 
+                'encode-decode' | 'fraud-detection' | 'secure-transfer' | 'compliance' | 
+                'domain-security' | null;
 
 const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
   const [messages, setMessages] = useState<ChatMessageProps[]>(initialMessages);
@@ -130,11 +133,20 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       tool = 'compliance';
       setActiveTool('compliance');
     }
+    // New condition for domain security analysis
+    else if ((lowerMsg.includes('domain') || lowerMsg.includes('website') || lowerMsg.includes('site')) &&
+             (lowerMsg.includes('security') || lowerMsg.includes('check') || lowerMsg.includes('analyze') || 
+              lowerMsg.includes('scan') || lowerMsg.includes('whois') || lowerMsg.includes('tls') || 
+              lowerMsg.includes('ssl') || lowerMsg.includes('subdomain') || lowerMsg.includes('email'))) {
+      response = "I can analyze domain security, including WHOIS information, subdomains, email security (SPF, DKIM, DMARC), and TLS configuration:";
+      tool = 'domain-security';
+      setActiveTool('domain-security');
+    }
     else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
-      response = "Hello! I'm CyberGuardian, your personal security assistant. I can help with password security, fraud detection, secure file transfers, and compliance with Indian cybersecurity laws. How can I assist you today?";
+      response = "Hello! I'm CyberGuardian, your personal security assistant. I can help with password security, fraud detection, secure file transfers, domain security analysis, and compliance with Indian cybersecurity laws. How can I assist you today?";
     }
     else if (lowerMsg.includes('help') || lowerMsg.includes('what can you do')) {
-      response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, detecting fraud, securely transferring files, and guiding you on Indian cybersecurity compliance. Just ask!";
+      response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, detecting fraud, securely transferring files, analyzing domain security, and guiding you on Indian cybersecurity compliance. Just ask!";
     }
     else if (lowerMsg.includes('report') && lowerMsg.includes('cyber') && (lowerMsg.includes('crime') || lowerMsg.includes('fraud'))) {
       response = "To report cybercrime in India, visit the official portal at https://cybercrime.gov.in. You can file a complaint there, and if you need guidance filling out the form, just let me know!";
@@ -143,7 +155,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       response = "To download your secure file, I'll need the 4-digit password that was provided to you. Please enter the password to access your encrypted file.";
     }
     else {
-      response = "I'm not sure I understand what you need. I can help with password checking, generation, IP information, encryption, fraud detection, secure file transfers, and Indian cybersecurity compliance. Please try asking in a different way or select a tool from the tabs above.";
+      response = "I'm not sure I understand what you need. I can help with password checking, generation, IP information, encryption, fraud detection, secure file transfers, domain security analysis, and Indian cybersecurity compliance. Please try asking in a different way or select a tool from the tabs above.";
     }
     
     // Simulate typing effect
@@ -180,7 +192,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
           onValueChange={(value) => setActiveTool(value as ToolType)}
           className="w-auto"
         >
-          <TabsList className="grid grid-cols-4 h-8 md:grid-cols-8">
+          <TabsList className="grid grid-cols-3 h-8 md:grid-cols-9">
             <TabsTrigger value="password-checker" className="text-xs px-2 py-1 flex items-center gap-1">
               <SecurityToolIcon tool="password-checker" /> Check
             </TabsTrigger>
@@ -201,6 +213,9 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
             </TabsTrigger>
             <TabsTrigger value="secure-transfer" className="text-xs px-2 py-1 flex items-center gap-1">
               <Upload className="h-3 w-3" /> Transfer
+            </TabsTrigger>
+            <TabsTrigger value="domain-security" className="text-xs px-2 py-1 flex items-center gap-1">
+              <Globe className="h-3 w-3" /> Domain
             </TabsTrigger>
             <TabsTrigger value="compliance" className="text-xs px-2 py-1 flex items-center gap-1">
               <FileSearch className="h-3 w-3" /> Compliance
