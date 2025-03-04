@@ -23,8 +23,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
     "Check my password strength",
     "Generate a strong password",
     "What's my IP information?",
-    "How to encrypt my data?",
-    "Help me encode a file",
+    "Help me encrypt my data",
+    "Check if this is a fraud",
+    "Transfer a file securely",
+    "Indian cybersecurity laws",
+    "How to report cyber fraud",
   ]);
   
   const inputRef = useRef<HTMLInputElement>(null);
@@ -131,3 +134,4 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
+

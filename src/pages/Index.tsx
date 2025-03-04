@@ -2,7 +2,7 @@
 import React from 'react';
 import Chat from '@/components/Chat';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield } from 'lucide-react';
+import { Shield, Lock } from 'lucide-react';
 
 const Index = () => {
   return (
@@ -23,6 +23,10 @@ const Index = () => {
           <p className="text-sm text-muted-foreground">
             Your personal security assistant. Always encrypted, always secure.
           </p>
+          <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center">
+            <Lock className="h-3 w-3 mr-1" /> 
+            Specializing in Indian cybersecurity laws and fraud prevention
+          </p>
         </div>
       </div>
     </div>
@@ -30,3 +34,4 @@ const Index = () => {
 };
 
 export default Index;
+

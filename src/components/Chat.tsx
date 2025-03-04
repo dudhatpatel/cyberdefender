@@ -5,19 +5,21 @@ import ChatInput from './ChatInput';
 import { SecurityToolIcon } from './SecurityTools';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, LucideIcon } from 'lucide-react';
+import { Shield, AlertTriangle, Lock, Upload, FileSearch, LucideIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatProps {
   initialMessages?: ChatMessageProps[];
 }
 
-type ToolType = 'password-checker' | 'password-generator' | 'ip-info' | 'hash-encrypt' | 'encode-decode' | null;
+type ToolType = 'password-checker' | 'password-generator' | 'ip-info' | 'hash-encrypt' | 'encode-decode' | 'fraud-detection' | 'secure-transfer' | 'compliance' | null;
 
 const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
   const [messages, setMessages] = useState<ChatMessageProps[]>(initialMessages);
   const [activeTool, setActiveTool] = useState<ToolType>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingContent, setTypingContent] = useState('');
+  const { toast } = useToast();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -31,7 +33,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
     if (messages.length === 0) {
       // Add initial greeting
       const initialBotMessage: ChatMessageProps = {
-        content: "Hello! I'm CyberGuardian, your personal security assistant. I can help with password checking, encryption, and more. How can I help you today?",
+        content: "Hello! I'm CyberGuardian, your personal security assistant. I can help with password checking, encryption, fraud detection, and Indian cybersecurity compliance. How can I help you today?",
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -87,9 +89,9 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       tool = 'password-generator';
       setActiveTool('password-generator');
     }
-    else if ((lowerMsg.includes('ip') || lowerMsg.includes('location')) && 
+    else if ((lowerMsg.includes('ip') || lowerMsg.includes('location') || lowerMsg.includes('vpn')) && 
              (lowerMsg.includes('information') || lowerMsg.includes('details') || lowerMsg.includes('data') || lowerMsg.includes('what') || lowerMsg.includes('where'))) {
-      response = "Let me fetch information about your IP address:";
+      response = "Let me fetch information about your IP address and check for VPN usage:";
       tool = 'ip-info';
       setActiveTool('ip-info');
     }
@@ -105,14 +107,44 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       tool = 'encode-decode';
       setActiveTool('encode-decode');
     }
+    else if (lowerMsg.includes('fraud') || lowerMsg.includes('scam') || lowerMsg.includes('phishing') || 
+             lowerMsg.includes('fake') || lowerMsg.includes('spam') || lowerMsg.includes('suspicious')) {
+      response = "I can help you detect and report fraud. Let me analyze suspicious links, messages, or guide you to official reporting channels:";
+      tool = 'fraud-detection';
+      setActiveTool('fraud-detection');
+    }
+    else if (lowerMsg.includes('transfer') || lowerMsg.includes('send file') || lowerMsg.includes('upload') || 
+             lowerMsg.includes('secure file') || lowerMsg.includes('encrypted file')) {
+      response = "I can help you securely transfer files with end-to-end encryption and password protection:";
+      tool = 'secure-transfer';
+      setActiveTool('secure-transfer');
+      
+      toast({
+        title: "Secure Transfer",
+        description: "For secure file transfers, we use AES-256 encryption with a 4-digit password.",
+      });
+    }
+    else if (lowerMsg.includes('compliance') || lowerMsg.includes('it act') || lowerMsg.includes('cert-in') || 
+             lowerMsg.includes('dpdp') || lowerMsg.includes('law') || lowerMsg.includes('legal') || 
+             lowerMsg.includes('regulation') || lowerMsg.includes('indian')) {
+      response = "Let me provide information about Indian cybersecurity laws and compliance requirements:";
+      tool = 'compliance';
+      setActiveTool('compliance');
+    }
     else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
-      response = "Hello! I'm CyberGuardian, your personal security assistant. How can I help you today?";
+      response = "Hello! I'm CyberGuardian, your personal security assistant. I can help with password security, fraud detection, secure file transfers, and compliance with Indian cybersecurity laws. How can I assist you today?";
     }
     else if (lowerMsg.includes('help') || lowerMsg.includes('what can you do')) {
-      response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, and encrypting/decrypting data. Just ask!";
+      response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, detecting fraud, securely transferring files, and guiding you on Indian cybersecurity compliance. Just ask!";
+    }
+    else if (lowerMsg.includes('report') && lowerMsg.includes('cyber') && (lowerMsg.includes('crime') || lowerMsg.includes('fraud'))) {
+      response = "To report cybercrime in India, visit the official portal at https://cybercrime.gov.in. You can file a complaint there, and if you need guidance filling out the form, just let me know!";
+    }
+    else if (lowerMsg.includes('download') && lowerMsg.includes('file')) {
+      response = "To download your secure file, I'll need the 4-digit password that was provided to you. Please enter the password to access your encrypted file.";
     }
     else {
-      response = "I'm not sure I understand what you need. I can help with password checking, generation, IP information, encryption, and encoding. Please try asking in a different way or select a tool from the tabs above.";
+      response = "I'm not sure I understand what you need. I can help with password checking, generation, IP information, encryption, fraud detection, secure file transfers, and Indian cybersecurity compliance. Please try asking in a different way or select a tool from the tabs above.";
     }
     
     // Simulate typing effect
@@ -149,7 +181,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
           onValueChange={(value) => setActiveTool(value as ToolType)}
           className="w-auto"
         >
-          <TabsList className="grid grid-cols-5 h-8">
+          <TabsList className="grid grid-cols-4 h-8 md:grid-cols-8">
             <TabsTrigger value="password-checker" className="text-xs px-2 py-1 flex items-center gap-1">
               <SecurityToolIcon tool="password-checker" /> Check
             </TabsTrigger>
@@ -164,6 +196,15 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
             </TabsTrigger>
             <TabsTrigger value="encode-decode" className="text-xs px-2 py-1 flex items-center gap-1">
               <SecurityToolIcon tool="encode-decode" /> Encode
+            </TabsTrigger>
+            <TabsTrigger value="fraud-detection" className="text-xs px-2 py-1 flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" /> Fraud
+            </TabsTrigger>
+            <TabsTrigger value="secure-transfer" className="text-xs px-2 py-1 flex items-center gap-1">
+              <Upload className="h-3 w-3" /> Transfer
+            </TabsTrigger>
+            <TabsTrigger value="compliance" className="text-xs px-2 py-1 flex items-center gap-1">
+              <FileSearch className="h-3 w-3" /> Compliance
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -194,3 +235,4 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
 };
 
 export default Chat;
+
