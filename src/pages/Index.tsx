@@ -1,12 +1,9 @@
-
 import React from 'react';
 import Chat from '@/components/Chat';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Lock } from 'lucide-react';
-
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 p-4 md:p-8">
+  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800 p-4 md:p-8 my-[26px] px-[35px]">
       <div className="w-full max-w-4xl flex flex-col items-center">
         <div className="flex items-center justify-center mb-6 space-x-2">
           <Shield className="h-8 w-8 text-cyberguardian animate-pulse-glow" />
@@ -29,9 +26,6 @@ const Index = () => {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
-
