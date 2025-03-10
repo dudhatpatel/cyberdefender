@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import ChatMessage, { ChatMessageProps } from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -33,16 +32,14 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
   
   useEffect(() => {
     if (messages.length === 0) {
-      // Add initial greeting
       const initialBotMessage: ChatMessageProps = {
-        content: "Hello! I'm CyberGuardian, your personal security assistant. I can help with password checking, encryption, fraud detection, and Indian cybersecurity compliance. How can I help you today?",
+        content: "Hello! I'm CyberDefender, your personal security assistant. I can help with password checking, encryption, fraud detection, and Indian cybersecurity compliance. How can I help you today?",
         sender: 'bot',
         timestamp: new Date(),
       };
       
       setIsTyping(true);
       
-      // Simulate typing effect
       let i = 0;
       const typing = setInterval(() => {
         setTypingContent(initialBotMessage.content.slice(0, i));
@@ -74,10 +71,8 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
   const handleBotResponse = (userMessage: string) => {
     setIsTyping(true);
     
-    // Process the message to determine what the user wants
     const lowerMsg = userMessage.toLowerCase();
     
-    // Determine which tool to show based on message content
     let response = '';
     let tool: ToolType = null;
     
@@ -133,7 +128,6 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       tool = 'compliance';
       setActiveTool('compliance');
     }
-    // New condition for domain security analysis
     else if ((lowerMsg.includes('domain') || lowerMsg.includes('website') || lowerMsg.includes('site')) &&
              (lowerMsg.includes('security') || lowerMsg.includes('check') || lowerMsg.includes('analyze') || 
               lowerMsg.includes('scan') || lowerMsg.includes('whois') || lowerMsg.includes('tls') || 
@@ -143,7 +137,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       setActiveTool('domain-security');
     }
     else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
-      response = "Hello! I'm CyberGuardian, your personal security assistant. I can help with password security, fraud detection, secure file transfers, domain security analysis, and compliance with Indian cybersecurity laws. How can I assist you today?";
+      response = "Hello! I'm CyberDefender, your personal security assistant. I can help with password security, fraud detection, secure file transfers, domain security analysis, and compliance with Indian cybersecurity laws. How can I assist you today?";
     }
     else if (lowerMsg.includes('help') || lowerMsg.includes('what can you do')) {
       response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, detecting fraud, securely transferring files, analyzing domain security, and guiding you on Indian cybersecurity compliance. Just ask!";
@@ -158,7 +152,6 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       response = "I'm not sure I understand what you need. I can help with password checking, generation, IP information, encryption, fraud detection, secure file transfers, domain security analysis, and Indian cybersecurity compliance. Please try asking in a different way or select a tool from the tabs above.";
     }
     
-    // Simulate typing effect
     let i = 0;
     const typing = setInterval(() => {
       setTypingContent(response.slice(0, i));
@@ -184,7 +177,7 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
       <div className="p-4 border-b glass-panel flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Shield className="h-6 w-6 text-cyberguardian" />
-          <h1 className="text-xl font-medium">CyberGuardian</h1>
+          <h1 className="text-xl font-medium">CyberDefender</h1>
         </div>
         
         <Tabs 
