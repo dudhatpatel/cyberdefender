@@ -62,7 +62,7 @@ const DomainSecurityAnalyzer: React.FC = () => {
       case 'High':
         return <Badge variant="destructive" className="ml-2">High Risk</Badge>;
       case 'Medium':
-        return <Badge variant="warning" className="ml-2 bg-orange-500">Medium Risk</Badge>;
+        return <Badge variant="secondary" className="ml-2 bg-orange-500 text-white">Medium Risk</Badge>;
       case 'Low':
         return <Badge variant="outline" className="ml-2 bg-green-500 text-white">Low Risk</Badge>;
       default:
@@ -82,7 +82,7 @@ const DomainSecurityAnalyzer: React.FC = () => {
         <Button 
           onClick={analyzeDomain} 
           disabled={isAnalyzing}
-          className="bg-cyberguardian hover:bg-cyberguardian/90"
+          className="bg-cyberdefender hover:bg-cyberdefender/90"
         >
           {isAnalyzing ? "Analyzing..." : "Analyze Domain"}
         </Button>
@@ -138,7 +138,7 @@ const DomainSecurityAnalyzer: React.FC = () => {
                         <Server className="h-4 w-4 mr-2" />
                         <span>{subdomain}</span>
                         {(subdomain.includes('admin') || subdomain.includes('dev')) && (
-                          <Badge variant="outline" className="ml-2 bg-orange-500 text-white">Sensitive</Badge>
+                          <Badge variant="secondary" className="ml-2 bg-orange-500 text-white">Sensitive</Badge>
                         )}
                       </div>
                     ))}
@@ -213,7 +213,7 @@ const DomainSecurityAnalyzer: React.FC = () => {
                   </div>
                   
                   {result.details.tlsSecurity.recommendations.length > 0 && (
-                    <Alert variant="warning" className="mt-4 border-orange-500">
+                    <Alert variant="destructive" className="mt-4 border-orange-500">
                       <Info className="h-4 w-4" aria-label="Info" />
                       <AlertTitle>TLS Security Recommendations</AlertTitle>
                       <AlertDescription>
