@@ -1,3 +1,4 @@
+
 import CryptoJS from 'crypto-js';
 
 // Password strength checking
