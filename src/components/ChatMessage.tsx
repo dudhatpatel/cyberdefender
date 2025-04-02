@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { SecurityToolsDisplay } from './SecurityTools';
-import { Bot, User, AlertTriangle, Upload, FileSearch } from 'lucide-react';
+import { Bot, User, AlertTriangle, Upload, FileSearch, Globe, Link } from 'lucide-react';
 
 export interface ChatMessageProps {
   content: string;
@@ -31,9 +31,87 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         return <Upload className="h-5 w-5" />;
       case 'compliance':
         return <FileSearch className="h-5 w-5" />;
+      case 'domain-security':
+        return <Globe className="h-5 w-5" />;
       default:
         return null;
     }
+  };
+
+  // Helper function to process URLs in text for rendering
+  const processTextWithLinks = (text: string) => {
+    // URL regex pattern
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    
+    if (!text.match(urlPattern)) {
+      return <span>{text}</span>;
+    }
+    
+    const parts = text.split(urlPattern);
+    const result: React.ReactNode[] = [];
+    
+    let i = 0;
+    text.match(urlPattern)?.forEach((url) => {
+      // Add text before URL
+      if (parts[i]) {
+        result.push(<span key={`text-${i}`}>{parts[i]}</span>);
+      }
+      
+      // Add URL as link
+      result.push(
+        <a 
+          key={`link-${i}`} 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-cyberguardian hover:underline inline-flex items-center"
+        >
+          {url} <Link className="h-3 w-3 ml-1" />
+        </a>
+      );
+      
+      i++;
+    });
+    
+    // Add remaining text
+    if (parts[i]) {
+      result.push(<span key={`text-${i}`}>{parts[i]}</span>);
+    }
+    
+    return result;
+  };
+
+  // Helper to format list-like content
+  const formatContent = (content: string) => {
+    if (content.includes('1.') && content.includes('2.') && content.includes('\n')) {
+      const lines = content.split('\n').filter(line => line.trim());
+      return (
+        <div>
+          {lines.map((line, index) => {
+            if (line.match(/^\d+\./)) {
+              // This is a numbered line (e.g., "1. Something")
+              return (
+                <p key={index} className="font-medium mt-2">
+                  {processTextWithLinks(line)}
+                </p>
+              );
+            } else if (line.match(/^\s*•/)) {
+              // This is a bullet point
+              return (
+                <p key={index} className="ml-4 mt-1">
+                  {processTextWithLinks(line)}
+                </p>
+              );
+            } else {
+              // Regular line
+              return <p key={index} className="mt-1">{processTextWithLinks(line)}</p>;
+            }
+          })}
+        </div>
+      );
+    }
+    
+    return processTextWithLinks(content);
   };
 
   return (
@@ -63,7 +141,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               <div className="typing-indicator">{content}</div>
             ) : (
               <div className="text-sm">
-                {content}
+                {formatContent(content)}
                 {tool === 'fraud-detection' && (
                   <div className="mt-2 flex items-center text-orange-500">
                     <AlertTriangle className="h-4 w-4 mr-2" />
@@ -89,6 +167,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                       {tool === 'fraud-detection' && "Fraud Detection Tool"}
                       {tool === 'secure-transfer' && "Secure File Transfer"}
                       {tool === 'compliance' && "Indian Cybersecurity Compliance"}
+                      {tool === 'domain-security' && "Domain Security Analysis"}
                     </span>
                   </div>
                 )}
@@ -109,4 +188,3 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 };
 
 export default ChatMessage;
-

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -47,12 +46,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
   
   const handleMicToggle = () => {
-    // This would normally handle voice recognition
-    // For now, we'll just toggle the state
     setRecording(!recording);
     
     if (!recording) {
-      // Simulate voice recognition delay
       setTimeout(() => {
         setRecording(false);
       }, 3000);
@@ -134,4 +130,3 @@ const ChatInput: React.FC<ChatInputProps> = ({
 };
 
 export default ChatInput;
-

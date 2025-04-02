@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import ChatMessage, { ChatMessageProps } from './ChatMessage';
 import ChatInput from './ChatInput';
@@ -142,8 +143,45 @@ const Chat: React.FC<ChatProps> = ({ initialMessages = [] }) => {
     else if (lowerMsg.includes('help') || lowerMsg.includes('what can you do')) {
       response = "I can help you with various security tasks like checking password strength, generating secure passwords, providing IP information, detecting fraud, securely transferring files, analyzing domain security, and guiding you on Indian cybersecurity compliance. Just ask!";
     }
-    else if (lowerMsg.includes('report') && lowerMsg.includes('cyber') && (lowerMsg.includes('crime') || lowerMsg.includes('fraud'))) {
-      response = "To report cybercrime in India, visit the official portal at https://cybercrime.gov.in. You can file a complaint there, and if you need guidance filling out the form, just let me know!";
+    else if ((lowerMsg.includes('report') && lowerMsg.includes('cyber') && (lowerMsg.includes('crime') || lowerMsg.includes('fraud'))) ||
+            (lowerMsg.includes('how') && lowerMsg.includes('report') && lowerMsg.includes('fraud'))) {
+      response = `To report cybercrime, follow these steps:
+
+1. Collect evidence - screenshots, emails, messages, transaction details
+2. Report to authorities based on your location:
+   • India: Visit https://cybercrime.gov.in or call 1930
+   • USA: FBI's Internet Crime Complaint Center (IC3) at https://www.ic3.gov
+   • UK: Action Fraud at https://www.actionfraud.police.uk
+   • Canada: Canadian Anti-Fraud Centre at https://www.antifraudcentre-centreantifraude.ca
+   
+3. Contact your bank/payment provider if financial fraud occurred
+4. Report to the platform where fraud happened (social media, e-commerce)
+5. Document your complaint reference numbers
+
+Would you like more specific information about reporting in India?`;
+    }
+    else if ((lowerMsg.includes('india') || lowerMsg.includes('indian')) && 
+             (lowerMsg.includes('report') || lowerMsg.includes('complaint'))) {
+      response = `For reporting cybercrimes in India, you have multiple options:
+
+1. National Cyber Crime Reporting Portal: https://cybercrime.gov.in
+   • Report all types of cybercrimes including financial fraud, social media, and child exploitation
+   • Available in multiple Indian languages
+   
+2. Cybercrime Helpline: Call 1930 (toll-free)
+   • For immediate assistance with financial frauds
+   • Operates 24/7
+
+3. Local Police Station
+   • File an FIR at your nearest police station with cybercrime cell
+   
+4. For financial frauds:
+   • Report within 24 hours for higher chances of fund recovery
+   • RBI Ombudsman for banking related issues
+   
+5. Document every communication with case ID numbers
+
+After reporting, keep following up with the authorities for case updates.`;
     }
     else if (lowerMsg.includes('download') && lowerMsg.includes('file')) {
       response = "To download your secure file, I'll need the 4-digit password that was provided to you. Please enter the password to access your encrypted file.";
